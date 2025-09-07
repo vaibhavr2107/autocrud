@@ -83,7 +83,7 @@ await functions.user.insert({ email: "a@b.com", password: "p" });
 const list = await functions.user.find({ pagination: { limit: 10 } });
 const joined = await functions.join.userOrders({ filter: { id: { eq: list[0].id } } });
 await stop();
-
+```
 Or: start REST + GraphQL
 
 ```js
@@ -92,7 +92,7 @@ import { buildAutoCRUD } from "autocrud-core";
 const orch = await buildAutoCRUD(config);
 await orch.start();
 ```
-```
+
 HTTP overview
 
 - REST per schema (respects ops flags):
