@@ -58,7 +58,7 @@ If using a scoped name (e.g. `@yourorg/autocrud`), ensure the scope allows publi
 
 ## Post-publish
 
-- Verify install: `npm i autocrud_v1` (or your scoped name) and run a quick demo.
+- Verify install: `npm i autocrud-core` (or your scoped name) and run a quick demo.
 - Update README with npm badge if desired.
 - Open roadmap issues: migrations, Redis cache, docker-compose for DB tests, join typed filters for REST, etc.
 

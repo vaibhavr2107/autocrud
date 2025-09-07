@@ -72,7 +72,7 @@ export default {
 ```
 3) Use it: functions first
 ```js
-import { generateFunctions } from "autocrud_v1";
+import { generateFunctions } from "autocrud-core";
 
 const { functions, stop } = await generateFunctions(config);
 await functions.user.insert({ email: "a@b.com", password: "p" });
@@ -82,7 +82,7 @@ await stop();
 
 Or: start REST + GraphQL
 
-import { buildAutoCRUD } from "autocrud_v1";
+import { buildAutoCRUD } from "autocrud-core";
 
 const orch = await buildAutoCRUD(config);
 await orch.start();

@@ -1,5 +1,5 @@
 {
-  "name": "autocrud_v1",
+  "name": "autocrud-core",
   "version": "0.1.0",
   "private": false,
   "type": "module",
@@ -42,6 +42,9 @@
     "url": "https://github.com/vaibhavr2107/autocrud/issues"
   },
   "homepage": "https://github.com/vaibhavr2107/autocrud#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "dist",
     "README.md",
