@@ -110,35 +110,85 @@ HTTP overview
   - Mutations: `createUser(input)`, `updateUser(id, input)`, `deleteUser(id)`
   - Joins: `join<Name>List(filter, limit, offset, <alias>Filter, <alias>SortField, <alias>SortDir, <alias>Limit, <alias>Offset)`
 
-GraphQL typed filter, sort, pagination
+Configuration (table)
 
-- Common inputs:
-  - `input PaginationInput { limit: Int, offset: Int }`
-  - `enum SortDirection { asc desc }`
-- Per schema (e.g., `User`):
-  - `input UserFilter { email: StringFilter, role: StringFilter, ... }`
-  - `enum UserSortField { id email password role createdAt updatedAt }`
-  - `input UserSort { field: UserSortField, direction: SortDirection }`
-  - Scalar filter inputs:
-    - `input StringFilter { eq: String, contains: String, in: [String!] }`
-    - `input NumberFilter { eq: Float, gt: Float, gte: Float, lt: Float, lte: Float, in: [Float!] }`
-    - `input BooleanFilter { eq: Boolean }`
-    - `input DateFilter { eq: String, gt: String, gte: String, lt: String, lte: String }`
+| Key | Type | Default | Description |
+| --- | --- | --- | --- |
+| `server.port` | number | `4000` | HTTP port when creating a new Express app. |
+| `server.basePath` | string | `/api` | Base path for REST and joins. |
+| `server.graphqlPath` | string | `/graphql` | Path for GraphQL endpoint. |
+| `server.restEnabled` | boolean | `true` | Mount REST endpoints. |
+| `server.graphqlEnabled` | boolean | `true` | Mount GraphQL endpoint. |
+| `server.loggingEnabled` | boolean | `true` | Structured request logs (Pino). |
+| `server.logLevel` | string | `info` | Pino log level. |
+| `server.tracingEnabled` | boolean | `true` | Adds `X-Request-Id` and logs it. |
+| `server.metricsEnabled` | boolean | `true` | Prometheus metrics middleware. |
+| `server.metricsPath` | string | `/autocurd-metrics` | Metrics endpoint path. |
+| `server.healthEnabled` | boolean | `true` | Enables `/autocurd-health`. |
+| `server.infoEnabled` | boolean | `true` | Enables `/autocurd-info`. |
+| `server.listEnabled` | boolean | `true` | Enables `/autocurd-list`. |
+| `server.schemaHotReloadEnabled` | boolean | `true` | Watch schemas and hot-reload routers/SDL. |
+| `database.type` | enum | `file` | One of `file|sqlite|postgres|mongodb`. |
+| `database.url` | string | `./data` | File dir (file), file path (sqlite), conn string (pg/mongo). |
+| `cache.enabled` | boolean | `true` | Read-through cache for lists/items. |
+| `cache.ttl` | number | `60` | TTL seconds. |
+| `functional.enabled` | boolean | `true` | Generate functions API. |
+| `schemas.<name>.file` | string | — | Path to schema JSON (required). |
+| `schemas.<name>.transform.enabled` | boolean | `false` | Enable field-level before/after transforms. |
+| `schemas.<name>.ops.create` | boolean | `true` | Enable create (REST/GraphQL). |
+| `schemas.<name>.ops.read` | boolean | `true` | Enable list (REST/GraphQL). |
+| `schemas.<name>.ops.readOne` | boolean | `true` | Enable get by id (REST/GraphQL). |
+| `schemas.<name>.ops.update` | boolean | `true` | Enable update (REST/GraphQL). |
+| `schemas.<name>.ops.delete` | boolean | `true` | Enable delete (REST/GraphQL). |
+| `joins.<name>` | object | — | `{ base, relations:[{ schema, localField, foreignField, as, type }] }`. |
+
+Protocol matrix (REST, GraphQL, Functions)
+
+| Capability | REST | GraphQL | Functions |
+| --- | --- | --- | --- |
+| List | `GET /api/:schema?limit&offset&sort&dir` | `<schema>List(filter, pagination, sort)` | `functions[schema].find({ filter, pagination, sort })` |
+| Get by id | `GET /api/:schema/:id` | `<schema>(id: ID!)` | `functions[schema].findById(id)` |
+| Create | `POST /api/:schema` | `create<Schema>(input)` | `functions[schema].insert(doc)` |
+| Update | `PATCH /api/:schema/:id` | `update<Schema>(id, input)` | `functions[schema].update(id, patch)` |
+| Delete | `DELETE /api/:schema/:id` | `delete<Schema>(id)` | `functions[schema].delete(id)` |
+| Join list | `GET /api/join/<name>` | `join<Name>List(filter, pagination, sort, <alias>Filter, <alias>Sort, <alias>Pagination)` | `functions.join.<name>({ filter, relations:{ alias:{ filter, sort, pagination }}})` |
+| Typed filters | Basic (query params) | Yes (per-schema filter inputs) | Yes (filter object) |
+| Sort | `sort`/`dir` query | `sort: <Schema>Sort` | `sort` option |
+| Pagination | `limit`/`offset` query | `pagination: PaginationInput` | `pagination` option |
+| ETag 304 | Yes on GET | N/A | N/A |
+
+GraphQL typed filter, sort, pagination (reference)
+
+| Input | Fields |
+| --- | --- |
+| `PaginationInput` | `limit: Int, offset: Int` |
+| `SortDirection` | `asc`, `desc` |
+| `StringFilter` | `eq`, `contains`, `in` |
+| `NumberFilter` | `eq`, `gt`, `gte`, `lt`, `lte`, `in` |
+| `BooleanFilter` | `eq` |
+| `DateFilter` | `eq`, `gt`, `gte`, `lt`, `lte` |
+| `<Schema>Filter` | Per-field scalar filters (e.g., `email: StringFilter`) |
+| `<Schema>SortField` | Enum of schema fields |
+| `<Schema>Sort` | `field: <Schema>SortField, direction: SortDirection` |
 
 Schema features
 
-- Types: string, number, boolean, date (ISO), json
-- Constraints: required, default, maxLength, min, max
-- Primary key:
-  - String name or object
-  - Object fields: `name`, `auto`, `strategy` (uuid|sequence), `start`, `step`, `type`
-  - Defaults: `{ name: "id", auto: true, strategy: "uuid" }`
-  - Adapter specifics:
-    - File: uuid or in-process numeric sequence
-    - SQLite: INTEGER PRIMARY KEY AUTOINCREMENT (sequence), or uuid
-    - Postgres: identity column (sequence), or uuid
-    - Mongo: uuid only when auto
-- Timestamps: auto `createdAt`/`updatedAt` if `timestamps: true`
+Features (table)
+
+| Feature | Default | Where | Notes |
+| --- | --- | --- | --- |
+| Field types | — | Schema | `string`, `number`, `boolean`, `date` (ISO), `json` |
+| Constraints | — | Schema | `required`, `default`, `maxLength`, `min`, `max` |
+| Primary key | `id`, `uuid` | Schema/DB | Object form supports `{ name, auto, strategy: uuid|sequence, start, step, type }` |
+| PK by adapter | — | DB | File: uuid/sequence; SQLite: AUTOINCREMENT; Postgres: identity; Mongo: uuid only |
+| Timestamps | `true` | Schema | Auto `createdAt`/`updatedAt` if `timestamps: true` |
+| Validation | On | REST/GraphQL | AJV validators for create/update per schema |
+| Transforms | Off | All ops | `beforeSave`/`afterRead` per field in config |
+| Caching | On (ttl=60s) | Reads | List/item cache, id-level invalidation, ETags for REST GET |
+| Joins | — | All | Config-driven, relation-level filter/sort/pagination |
+| Hot reload | On | Server | Watches schema dirs; rebuilds REST/joins/GraphQL |
+| Observability | On | Server | Logs, metrics, tracing; utility endpoints enabled by default |
+| Docs endpoints | On | Server | `/autocurd-openapi.json`, `/autocurd-sdl` |
 
 Validation
 
