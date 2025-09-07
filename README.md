@@ -1,4 +1,4 @@
-# autocrud_v1
+# Autocrud
 
 Plug-and-play Node.js library that auto-generates CRUD REST + GraphQL endpoints and a functional API from simple JSON schemas. Ships with multiple database adapters, transforms, caching, joins, observability, and hot-reload.
 
@@ -26,7 +26,7 @@ Quick start (pick one)
 1) Define schemas (JSON)
 
 Example `src/schemas/user.json`
-
+```json
 {
   "name": "user",
   "primaryKey": { "name": "id", "auto": true, "strategy": "uuid", "type": "string" },
@@ -38,9 +38,9 @@ Example `src/schemas/user.json`
     "role": { "type": "string" }
   }
 }
-
+```
 Example `src/schemas/product_seq.json` (numeric sequence PK)
-
+```json
 {
   "name": "product",
   "primaryKey": { "name": "id", "auto": true, "strategy": "sequence", "type": "number", "start": 100, "step": 1 },
@@ -51,11 +51,11 @@ Example `src/schemas/product_seq.json` (numeric sequence PK)
     "price": { "type": "number", "required": true }
   }
 }
-
+```
 2) Create a config
 
 Simplest config (file adapter) — see `examples/config.ts` for a fuller version.
-
+```js
 export default {
   server: { port: 4000, basePath: "/api", graphqlPath: "/graphql" },
   database: { type: "file", url: "./data" },
@@ -69,9 +69,9 @@ export default {
   cache: { enabled: true, ttl: 60 },
   functional: { enabled: true }
 }
-
+```
 3) Use it: functions first
-
+```js
 import { generateFunctions } from "autocrud_v1";
 
 const { functions, stop } = await generateFunctions(config);
@@ -86,7 +86,7 @@ import { buildAutoCRUD } from "autocrud_v1";
 
 const orch = await buildAutoCRUD(config);
 await orch.start();
-
+```
 HTTP overview
 
 - REST per schema (respects ops flags):
@@ -214,7 +214,6 @@ Tips & limits
 Roadmap (advanced)
 
 - Migrations and schema evolution
-- Typed GraphQL filter inputs
 - Redis cache provider
 - WebSockets for live updates
 - Auth/RBAC and per-field permissions
