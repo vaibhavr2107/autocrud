@@ -1,0 +1,11 @@
+{
+  "name": "order",
+  "primaryKey": "id",
+  "timestamps": true,
+  "fields": {
+    "id": { "type": "string", "required": true },
+    "userId": { "type": "string", "required": true },
+    "total": { "type": "number", "required": true }
+  }
+}
+

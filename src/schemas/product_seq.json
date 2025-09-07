@@ -1,0 +1,11 @@
+{
+  "name": "product",
+  "primaryKey": { "name": "id", "auto": true, "strategy": "sequence", "type": "number", "start": 100, "step": 1 },
+  "timestamps": true,
+  "fields": {
+    "id": { "type": "number", "required": true },
+    "name": { "type": "string", "required": true },
+    "price": { "type": "number", "required": true }
+  }
+}
+

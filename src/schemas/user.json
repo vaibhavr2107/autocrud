@@ -1,0 +1,11 @@
+{
+  "name": "user",
+  "primaryKey": { "name": "id", "auto": true, "strategy": "uuid", "type": "string" },
+  "timestamps": true,
+  "fields": {
+    "id": { "type": "string", "required": true },
+    "email": { "type": "string", "required": true },
+    "password": { "type": "string", "required": true },
+    "role": { "type": "string" }
+  }
+}
