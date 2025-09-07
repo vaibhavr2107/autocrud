@@ -35,12 +35,12 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/<your-org>/autocrud.git"
+    "url": "https://github.com/vaibhavr2107/autocrud.git"
   },
   "bugs": {
-    "url": "https://github.com/<your-org>/autocrud/issues"
+    "url": "https://github.com/vaibhavr2107/autocrud/issues"
   },
-  "homepage": "https://github.com/<your-org>/autocrud#readme",
+  "homepage": "https://github.com/vaibhavr2107/autocrud#readme",
   "dependencies": {
     "ajv": "^8.17.1",
     "apollo-server-express": "^3.13.0",
