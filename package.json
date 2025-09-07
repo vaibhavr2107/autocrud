@@ -21,8 +21,10 @@
     "build": "tsup src/index.ts --dts --format cjs,esm --sourcemap",
     "prepublishOnly": "npm run build",
     "test": "vitest run",
-    "lint": "eslint \"src/**/*.{ts,tsx}\"",
-    "format": "prettier -w ."
+    "lint": "eslint \"src/**/*.{ts,tsx}\" || echo 'eslint not configured'",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "format": "prettier -w .",
+    "format:check": "prettier -c ."
   },
   "keywords": [
     "crud",

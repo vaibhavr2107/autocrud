@@ -9,10 +9,14 @@ Core ideas
 - Swap storage by adapter: File, SQLite, Postgres, or MongoDB.
 - Opt-in transforms, caching, joins, observability, and live schema reload.
 
-Install
+Installation
 
-- Requires Node 18+
-- Optional native deps for SQLite: `better-sqlite3`
+```bash
+npm install autocrud-core
+# Optional: for SQLite adapter
+npm install better-sqlite3
+```
+Requirements: Node 18+
 
 Quick start (pick one)
 
@@ -82,10 +86,12 @@ await stop();
 
 Or: start REST + GraphQL
 
+```js
 import { buildAutoCRUD } from "autocrud-core";
 
 const orch = await buildAutoCRUD(config);
 await orch.start();
+```
 ```
 HTTP overview
 
@@ -151,6 +157,17 @@ Caching
 - Automatic invalidation on writes (by schema and id)
 - REST GETs return ETag; send `If-None-Match` for 304
 
+Database connections (samples)
+
+- File (default for demos)
+  - `{ type: "file", url: "./data" }`
+- SQLite (requires better-sqlite3)
+  - `{ type: "sqlite", url: "./data/dev.db" }`
+- Postgres
+  - `{ type: "postgres", url: "postgres://user:pass@host:5432/dbname" }`
+- MongoDB
+  - `{ type: "mongodb", url: "mongodb://localhost:27017/mydb" }`
+
 Joins
 
 - Define in config under `joins`:
@@ -210,6 +227,15 @@ Tips & limits
 - File adapter: single-process only; use SQLite/Postgres/Mongo for multi-process deployments or heavy writes.
 - Tests: Postgres/Mongo integration are opt-in via `PG_URL`/`MONGO_URL` env vars.
 - Windows + better-sqlite3: requires native build tools; if not installed, SQLite stays optional and tests skip.
+
+Testing & CI/CD
+
+- Run tests locally: `npm test`
+- Typecheck: `npm run typecheck`
+- Formatting check: `npm run format:check`
+- GitHub Actions CI: `.github/workflows/ci.yml`
+  - Runs typecheck, tests, build on push/PR (Node 18/20)
+  - Publishes to npm on tag `v*` if `NPM_TOKEN` is set in repo secrets
 
 Roadmap (advanced)
 
