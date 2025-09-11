@@ -1,12 +1,12 @@
-# Release 0.1.3
+# Release 0.1.4
 
-This document captures the notes for the 0.1.3 release and the steps to publish to npm.
+This document captures the notes for the 0.1.4 release and the steps to publish to npm.
 
 ## Highlights
 
-See CHANGELOG.md for the full list. Key changes in 0.1.3:
-- Configurable port fallback on conflicts (`server.portFallback`, `server.maxPortRetries`), `process.env.PORT` respected.
-- `/autocurd-info` includes `actualPort`; `/autocurd-list` uses the actual port in sample URLs.
+See CHANGELOG.md for the full list. Key changes in 0.1.4:
+- `/autocurd-info` adds `server.metricsPathFull` (full metrics route under base path).
+- README updated to reflect metrics under base path and compatibility route.
 
 Highlights (from earlier releases):
 - Auto CRUD for REST + GraphQL from JSON schemas
@@ -34,16 +34,16 @@ git status
 
 # Commit current changes
 git add .
-git commit -m "chore(release): v0.1.3"
+git commit -m "chore(release): v0.1.4"
 
 # Tag
-git tag v0.1.3
+git tag v0.1.4
 
 # Push
 git push -u origin main --tags
 ```
 
-Create a GitHub release for tag `v0.1.3` and paste the notes from CHANGELOG.
+Create a GitHub release for tag `v0.1.4` and paste the notes from CHANGELOG.
 
 ## Publish to npm
 

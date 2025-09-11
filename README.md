@@ -272,10 +272,18 @@ Observability
 
 - Structured logs (Pino) with request IDs
 - Prometheus metrics
-  - `/autocurd-metrics` (or set `server.metricsPath`)
+  - Served under the REST base path: `<basePath><metricsPath>` (e.g., `/api/autocurd-metrics`)
+  - Backward-compat route also available at root: `/autocurd-metrics`
   - `autocrud_requests_total{method,route,code}`
   - `autocrud_request_duration_ms_sum|count{route}`
 - Tracing via `X-Request-Id`
+
+Info endpoint
+
+- `/autocurd-info` includes:
+  - `server.actualPort`: the port in use when Autocrud created the server
+  - `server.metricsPathFull`: full metrics path including base path
+  - config summary, schemas/joins, and last reload info
 
 Utility endpoints (toggle in server config)
 
@@ -296,6 +304,7 @@ Hot reload (default on)
 Config reference (summary)
 
 - `server`: `{ port, portFallback, maxPortRetries, existingApp, basePath, graphqlPath, restEnabled, graphqlEnabled, loggingEnabled, logLevel, tracingEnabled, metricsEnabled, metricsPath, healthEnabled, infoEnabled, listEnabled, schemaHotReloadEnabled }`
+  - Metrics are exposed at `<basePath><metricsPath>`; root `/autocurd-metrics` remains for compatibility.
 - `database`: `{ type: "file"|"sqlite"|"postgres"|"mongodb", url }`
 - `schemas[name]`: `{ file, transform?, ops? }` — `ops`: `{ create?, read?, readOne?, update?, delete? }`
 - `joins[name]`: `{ base, relations: [{ schema, localField, foreignField, as, type? }] }`

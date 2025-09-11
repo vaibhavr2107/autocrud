@@ -46,3 +46,11 @@ Added
 
 Docs
 - README: Documented server port behavior and new `server` options.
+
+## [0.1.4] - 2025-09-11
+
+Added
+- `/autocurd-info` now includes `server.metricsPathFull` (full metrics route including base path).
+
+Changed
+- README Observability section documents metrics path under base path and compatibility route.

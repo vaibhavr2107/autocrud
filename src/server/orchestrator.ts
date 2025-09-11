@@ -48,17 +48,17 @@ export function createOrchestrator(config: InternalConfig, schemas: NormalizedSc
   if (config.server.loggingEnabled) app.use(requestLoggerMiddleware);
   if (config.server.metricsEnabled) app.use(metrics.middleware());
   if (config.server.metricsEnabled) {
-    app.get(config.server.metricsPath, (_req, res) => {
+    const basePath = config.server.basePath || "/api";
+    const fullMetricsPath = `${basePath.replace(/\/$/, "")}${config.server.metricsPath.startsWith("/") ? "" : "/"}${config.server.metricsPath}`;
+    app.get(fullMetricsPath, (_req, res) => {
       res.setHeader("Content-Type", "text/plain; version=0.0.4");
       res.send(metrics.renderPrometheus());
     });
-    // Backward-compatible default path at /autocurd-metrics
-    if (config.server.metricsPath !== "/autocurd-metrics") {
-      app.get("/autocurd-metrics", (_req, res) => {
-        res.setHeader("Content-Type", "text/plain; version=0.0.4");
-        res.send(metrics.renderPrometheus());
-      });
-    }
+    // Backward-compatible default path at /autocurd-metrics (root)
+    app.get("/autocurd-metrics", (_req, res) => {
+      res.setHeader("Content-Type", "text/plain; version=0.0.4");
+      res.send(metrics.renderPrometheus());
+    });
   }
 
   // Health endpoint
@@ -77,6 +77,8 @@ export function createOrchestrator(config: InternalConfig, schemas: NormalizedSc
         const require = createRequire(import.meta.url);
         version = require("../../package.json").version ?? version;
       } catch {}
+      const basePath = config.server.basePath || "/api";
+      const metricsPathFull = `${basePath.replace(/\/$/, "")}${config.server.metricsPath.startsWith("/") ? "" : "/"}${config.server.metricsPath}`;
       const info = {
         library: { name: "autocrud_v1", version },
         runtime: { node: process.version, pid: process.pid, platform: process.platform, arch: process.arch, hostname: os.hostname() },
@@ -87,6 +89,7 @@ export function createOrchestrator(config: InternalConfig, schemas: NormalizedSc
           graphqlEnabled: config.server.graphqlEnabled,
           metricsEnabled: config.server.metricsEnabled,
           metricsPath: config.server.metricsPath,
+          metricsPathFull,
           loggingEnabled: config.server.loggingEnabled,
           tracingEnabled: config.server.tracingEnabled,
           configuredPort: config.server.port,
