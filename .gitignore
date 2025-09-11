@@ -30,3 +30,4 @@ tmp/
 .pnpm-store/
 .eslintcache
 
+/Demo

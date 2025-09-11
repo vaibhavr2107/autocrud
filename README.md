@@ -18,6 +18,25 @@ npm install better-sqlite3
 ```
 Requirements: Node 18+
 
+Usage
+
+- ESM (recommended):
+```ts
+import { buildAutoCRUD, generateFunctions } from "autocrud-core";
+```
+
+- CommonJS (compat):
+```js
+const { buildAutoCRUD, generateFunctions } = require("autocrud-core");
+```
+
+Package format
+
+- ESM-first with CJS compatibility
+  - ESM entry: `dist/index.js` via `exports.import`
+  - CJS entry: `dist/index.cjs` via `exports.require`
+  - Types: `dist/index.d.ts`
+
 Quick start (pick one)
 
 - Functions only (no HTTP):

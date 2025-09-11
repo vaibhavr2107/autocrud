@@ -1,10 +1,15 @@
-# Release 0.1.0
+# Release 0.1.2
 
-This document captures the notes for the 0.1.0 release and the steps to publish to npm.
+This document captures the notes for the 0.1.2 release and the steps to publish to npm.
 
 ## Highlights
 
-See CHANGELOG.md for the full list. Key features:
+See CHANGELOG.md for the full list. Key changes in 0.1.2:
+- ESM-first exports (keep CJS compat)
+- README usage examples (import and require)
+- Demo folder removed from repo (library-only)
+
+Highlights (from 0.1.0):
 - Auto CRUD for REST + GraphQL from JSON schemas
 - Functional API, joins, transforms, caching
 - DB adapters: File, SQLite, Postgres, MongoDB
@@ -18,9 +23,9 @@ See CHANGELOG.md for the full list. Key features:
 2. Ensure license is Apache-2.0 (done) and `LICENSE` is present (done).
 3. Build succeeds: `npm run build` → emits `dist/`
 4. Tests pass: `npm test`
-5. Example runs:
-   - `npm run demo`
-   - `npm run dev:server`
+5. Examples (optional):
+   - `npm run dev` (functions demo)
+   - `npm run dev:server` (server demo)
 
 ## Tag & GitHub release
 
@@ -30,16 +35,16 @@ git status
 
 # Commit current changes
 git add .
-git commit -m "chore(release): v0.1.0"
+git commit -m "chore(release): v0.1.2"
 
 # Tag
-git tag v0.1.0
+git tag v0.1.2
 
 # Push
 git push -u origin main --tags
 ```
 
-Create a GitHub release for tag `v0.1.0` and paste the notes from CHANGELOG.
+Create a GitHub release for tag `v0.1.2` and paste the notes from CHANGELOG.
 
 ## Publish to npm
 

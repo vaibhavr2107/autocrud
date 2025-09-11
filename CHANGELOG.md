@@ -25,3 +25,12 @@ Breaking changes
 
 Docs
 - README with quick start, examples, config reference, and feature overview
+
+## [0.1.2] - 2025-09-11
+
+Changed
+- ESM-first package exports with CJS compatibility. `exports.import` -> `dist/index.js`, `exports.require` -> `dist/index.cjs`.
+- README: Added usage examples for both ESM `import` and CJS `require`.
+
+Notes
+- Build still emits both ESM and CJS bundles and type declarations.
