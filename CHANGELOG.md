@@ -34,3 +34,15 @@ Changed
 
 Notes
 - Build still emits both ESM and CJS bundles and type declarations.
+
+## [0.1.3] - 2025-09-11
+
+Added
+- Configurable port conflict handling when Autocrud creates the server:
+  - `server.portFallback`: `error | increment | auto` (default `increment`).
+  - `server.maxPortRetries`: number (default `10`).
+  - Respects `process.env.PORT` if provided.
+- Orchestrator now exposes `actualPort` in `/autocurd-info` and uses it in `/autocurd-list` sample URLs.
+
+Docs
+- README: Documented server port behavior and new `server` options.

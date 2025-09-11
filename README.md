@@ -112,6 +112,17 @@ const orch = await buildAutoCRUD(config);
 await orch.start();
 ```
 
+Server port behavior
+
+- If you pass an existing Express app via `server.existingApp`, Autocrud mounts routes and does not call `listen()`; your app controls the port.
+- Otherwise, Autocrud creates an HTTP server:
+  - Uses `process.env.PORT` if set; otherwise `server.port` (default 4000).
+  - On EADDRINUSE, fallback is configurable via `server.portFallback`:
+    - `"error"`: throw on conflict
+    - `"increment"` (default): try `port+1` up to `server.maxPortRetries` (default 10)
+    - `"auto"`: bind to an ephemeral port chosen by the OS
+  - The chosen `actualPort` is exposed in `/autocurd-info` and used in `/autocurd-list` sample curl.
+
 HTTP overview
 
 - REST per schema (respects ops flags):
@@ -284,7 +295,7 @@ Hot reload (default on)
 
 Config reference (summary)
 
-- `server`: `{ port, existingApp, basePath, graphqlPath, restEnabled, graphqlEnabled, loggingEnabled, logLevel, tracingEnabled, metricsEnabled, metricsPath, healthEnabled, infoEnabled, listEnabled, schemaHotReloadEnabled }`
+- `server`: `{ port, portFallback, maxPortRetries, existingApp, basePath, graphqlPath, restEnabled, graphqlEnabled, loggingEnabled, logLevel, tracingEnabled, metricsEnabled, metricsPath, healthEnabled, infoEnabled, listEnabled, schemaHotReloadEnabled }`
 - `database`: `{ type: "file"|"sqlite"|"postgres"|"mongodb", url }`
 - `schemas[name]`: `{ file, transform?, ops? }` — `ops`: `{ create?, read?, readOne?, update?, delete? }`
 - `joins[name]`: `{ base, relations: [{ schema, localField, foreignField, as, type? }] }`

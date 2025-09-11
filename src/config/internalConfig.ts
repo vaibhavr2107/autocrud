@@ -2,7 +2,7 @@ import path from "node:path";
 import { assertConfigShape, type Config } from "./validators";
 
 export type InternalConfig = {
-  server: { port: number; existingApp: any | null; basePath: string; graphqlPath: string; restEnabled: boolean; graphqlEnabled: boolean; loggingEnabled: boolean; logLevel: "fatal" | "error" | "warn" | "info" | "debug" | "trace"; tracingEnabled: boolean; metricsEnabled: boolean; metricsPath: string; healthEnabled: boolean; infoEnabled: boolean; listEnabled: boolean; schemaHotReloadEnabled: boolean };
+  server: { port: number; portFallback: "error" | "increment" | "auto"; maxPortRetries: number; existingApp: any | null; basePath: string; graphqlPath: string; restEnabled: boolean; graphqlEnabled: boolean; loggingEnabled: boolean; logLevel: "fatal" | "error" | "warn" | "info" | "debug" | "trace"; tracingEnabled: boolean; metricsEnabled: boolean; metricsPath: string; healthEnabled: boolean; infoEnabled: boolean; listEnabled: boolean; schemaHotReloadEnabled: boolean };
   database: { type: "file" | "mongodb" | "postgres" | "sqlite"; url: string };
   schemas: Record<string, { file: string; transform?: Config["schemas"][string]["transform"]; ops?: Partial<{ create: boolean; read: boolean; readOne: boolean; update: boolean; delete: boolean }> }>;
   cache: { enabled: boolean; ttl: number };
@@ -36,6 +36,8 @@ export function normalizeConfig(userConfig: unknown): InternalConfig {
     cwd,
     server: {
       port: server.port ?? 4000,
+      portFallback: (server.portFallback as any) ?? "increment",
+      maxPortRetries: server.maxPortRetries ?? 10,
       existingApp: server.existingApp ?? null,
       basePath: server.basePath ?? "/api",
       graphqlPath: server.graphqlPath ?? "/graphql",

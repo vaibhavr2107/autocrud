@@ -1,15 +1,14 @@
-# Release 0.1.2
+# Release 0.1.3
 
-This document captures the notes for the 0.1.2 release and the steps to publish to npm.
+This document captures the notes for the 0.1.3 release and the steps to publish to npm.
 
 ## Highlights
 
-See CHANGELOG.md for the full list. Key changes in 0.1.2:
-- ESM-first exports (keep CJS compat)
-- README usage examples (import and require)
-- Demo folder removed from repo (library-only)
+See CHANGELOG.md for the full list. Key changes in 0.1.3:
+- Configurable port fallback on conflicts (`server.portFallback`, `server.maxPortRetries`), `process.env.PORT` respected.
+- `/autocurd-info` includes `actualPort`; `/autocurd-list` uses the actual port in sample URLs.
 
-Highlights (from 0.1.0):
+Highlights (from earlier releases):
 - Auto CRUD for REST + GraphQL from JSON schemas
 - Functional API, joins, transforms, caching
 - DB adapters: File, SQLite, Postgres, MongoDB
@@ -35,16 +34,16 @@ git status
 
 # Commit current changes
 git add .
-git commit -m "chore(release): v0.1.2"
+git commit -m "chore(release): v0.1.3"
 
 # Tag
-git tag v0.1.2
+git tag v0.1.3
 
 # Push
 git push -u origin main --tags
 ```
 
-Create a GitHub release for tag `v0.1.2` and paste the notes from CHANGELOG.
+Create a GitHub release for tag `v0.1.3` and paste the notes from CHANGELOG.
 
 ## Publish to npm
 

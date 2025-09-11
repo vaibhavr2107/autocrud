@@ -18,6 +18,8 @@ export type DatabaseType = "file" | "mongodb" | "postgres" | "sqlite";
 export type Config = {
   server?: {
     port?: number;
+    portFallback?: "error" | "increment" | "auto";
+    maxPortRetries?: number;
     existingApp?: any | null;
     basePath?: string; // REST base path, default /api
     graphqlPath?: string; // default /graphql

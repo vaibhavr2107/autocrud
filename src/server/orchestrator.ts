@@ -34,6 +34,7 @@ export function createOrchestrator(config: InternalConfig, schemas: NormalizedSc
   let app = config.server.existingApp ?? express();
   let httpServer: http.Server | null = null;
   let apollo: ApolloServer | null = null;
+  let actualPort: number | null = null;
   let functions = getCRUD(config, schemas, adapter);
   let latestSDL: string | null = null;
   let watchedDirs: string[] = [];
@@ -88,6 +89,10 @@ export function createOrchestrator(config: InternalConfig, schemas: NormalizedSc
           metricsPath: config.server.metricsPath,
           loggingEnabled: config.server.loggingEnabled,
           tracingEnabled: config.server.tracingEnabled,
+          configuredPort: config.server.port,
+          portFallback: (config.server as any).portFallback,
+          maxPortRetries: (config.server as any).maxPortRetries,
+          actualPort,
         },
         database: { type: config.database.type },
         schemas: Object.keys(schemas),
@@ -102,7 +107,7 @@ export function createOrchestrator(config: InternalConfig, schemas: NormalizedSc
   if (config.server.listEnabled) {
     app.get("/autocurd-list", (_req, res) => {
       const list: any[] = [];
-      const baseUrl = `http://localhost:${config.server.port}`;
+      const baseUrl = `http://localhost:${actualPort ?? config.server.port}`;
       // REST per schema
       for (const s of Object.values(schemas)) {
         const ops = config.schemas[s.name]?.ops ?? {};
@@ -229,9 +234,46 @@ export function createOrchestrator(config: InternalConfig, schemas: NormalizedSc
         latestSDL = graph.typeDefs as string;
       }
       if (!config.server.existingApp) {
-        await new Promise<void>((resolve) => {
-          httpServer = app.listen(config.server.port, () => resolve());
+        const envPort = process.env.PORT ? Number(process.env.PORT) : undefined;
+        const preferred = Number.isFinite(envPort as any) ? (envPort as number) : config.server.port;
+        const fallback = (config.server as any).portFallback ?? 'error';
+        const maxRetries = (config.server as any).maxPortRetries ?? 10;
+
+        const tryListen = (p: number) => new Promise<http.Server>((resolve, reject) => {
+          const srv = app.listen(p, () => resolve(srv));
+          srv.on('error', (err: any) => reject(err));
         });
+
+        let bound = false;
+        let lastErr: any = null;
+        if (fallback === 'auto') {
+          try {
+            httpServer = await tryListen(0);
+            const addr = httpServer.address();
+            actualPort = typeof addr === 'object' && addr ? (addr as any).port : preferred;
+            bound = true;
+          } catch (e) { lastErr = e; }
+        } else if (fallback === 'increment') {
+          for (let i = 0; i <= maxRetries; i++) {
+            const candidate = preferred + i;
+            try {
+              httpServer = await tryListen(candidate);
+              actualPort = candidate;
+              bound = true;
+              break;
+            } catch (e: any) {
+              lastErr = e;
+              if (!(e && e.code === 'EADDRINUSE')) break;
+            }
+          }
+        } else {
+          try {
+            httpServer = await tryListen(preferred);
+            actualPort = preferred;
+            bound = true;
+          } catch (e) { lastErr = e; }
+        }
+        if (!bound) throw new Error(`PORT_ERROR: failed to bind HTTP server (preferred=${preferred}, fallback=${fallback}): ${lastErr?.code || lastErr}`);
       }
       if (config.server.schemaHotReloadEnabled) {
         this.watchSchemas();
